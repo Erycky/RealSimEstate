@@ -1,17 +1,63 @@
 ---
-
+// src/pages/index.astro
+import Layout from "../layouts/Layout.astro";
+import FiltrosBusca from "../components/react/FiltrosBusca";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="RealSimEstate | Encontre seu próximo porto seguro">
+  <section
+    class="relative h-[440px] w-full flex items-center justify-center overflow-hidden bg-emerald-950"
+  >
+    <img
+      src="/hero-bg.jpg"
+      alt="RealSimEstate Background"
+      class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay scale-105"
+    />
+
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent"
+    >
+    </div>
+
+    <div class="relative z-10 text-center px-4 max-w-3xl mx-auto space-y-4">
+      <h1
+        class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight drop-shadow-md"
+      >
+        Encontre seu próximo <span class="text-emerald-400">porto seguro</span>
+      </h1>
+      <p
+        class="text-lg md:text-xl text-emerald-100 font-medium max-w-xl mx-auto drop-shadow-sm"
+      >
+        Explore os melhores imóveis projetados com precisão e estilo para a sua
+        nova jornada.
+      </p>
+    </div>
+  </section>
+
+  <section class="relative z-20 -mt-10">
+    {
+      /* Usamos client:load aqui para o Astro ativar o JavaScript do React 
+      imediatamente no carregamento da página, permitindo as buscas automáticas.
+    */
+    }
+    <FiltrosBusca client:load />
+  </section>
+</Layout>
+
+<style>
+  /* Pequena animação suave para a entrada dos cards na tela */
+  :global(.animate-fadeIn) {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
