@@ -9,12 +9,17 @@
       <p>(51) 95544-3322</p>
       <p>contato@realsimestate.com.br</p>
     </div>
+
     <div class="footer-nav">
-      <a href="/comprar">Comprar</a>
-      <a href="/alugar">Alugar</a>
-      <a href="/contato">Contato</a>
-      <a href="/anunciar">Anunciar</a>
-      <a href="/login">Login</a>
+      <div class="footer-col">
+        <a href="/comprar">Comprar</a>
+        <a href="/alugar">Alugar</a>
+      </div>
+      <div class="footer-col">
+        <a href="/contato">Contato</a>
+        <a href="/anunciar">Anunciar</a>
+        <a href="/login">Login</a>
+      </div>
     </div>
   </div>
 </footer>
@@ -23,21 +28,19 @@
   .footer-container {
     flex-shrink: 0;
     width: 100%;
-    background: var(
-      --sim-green-gradient
-    ); /* Seu gradiente centralizado aqui! */
+    background: var(--sim-green-gradient);
     color: #ffffff;
     padding: 48px 16px;
     margin-top: 64px;
+    font-family: sans-serif;
   }
 
   .footer-content {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Empurra a marca para a esquerda e os links para a direita */
     align-items: flex-start;
-    flex-wrap: wrap;
     gap: 32px;
   }
 
@@ -53,10 +56,17 @@
     margin-bottom: 6px;
   }
 
+  /* O pulo do gato: flex horizontal para juntar as duas colunas de links */
   .footer-nav {
     display: flex;
+    gap: 80px; /* Espaçamento generoso entre a coluna 1 e a coluna 2 */
+  }
+
+  /* Cada sub-coluna mantém o empilhamento vertical */
+  .footer-col {
+    display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
 
   .footer-nav a {
@@ -65,9 +75,22 @@
     font-size: 14px;
     font-weight: 700;
     transition: opacity 0.2s;
+    white-space: nowrap; /* Garante que nenhum link quebre linha internamente */
   }
 
   .footer-nav a:hover {
     opacity: 0.7;
+  }
+
+  /* Responsivo básico para telas de celular */
+  @media (max-width: 640px) {
+    .footer-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 40px;
+    }
+    .footer-nav {
+      gap: 48px; /* Reduz o espaço entre colunas no mobile */
+    }
   }
 </style>

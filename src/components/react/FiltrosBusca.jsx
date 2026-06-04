@@ -19,27 +19,27 @@ export default function FiltrosBusca() {
 
   const ITENS_POR_PAGINA = 8;
 
-  // Estilos CSS Fixos para garantir o seu design sem depender do Tailwind
+  // Estilos CSS integrados perfeitamente com os tokens globais do seu :root
   const estilos = {
     container: { width: '100%', maxWidth: '900px', margin: '0 auto', marginTop: '-40px', padding: '0 16px', fontFamily: 'sans-serif' },
-    barraBusca: { display: 'flex', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '32px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid #f3f4f6', height: '72px', overflow: 'hidden', position: 'relative', zIndex: 20 },
-    btnSeta: { height: '100%', px: '24px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 24px' },
-    inputBusca: { flexGrow: 1, height: '100%', border: 'none', padding: '0 8px', fontSize: '18px', color: '#0B521E', outline: 'none' },
-    btnEnviar: { height: '100%', padding: '0 32px', backgroundColor: '#0B521E', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTopRightRadius: '32px', borderBottomRightRadius: '32px' },
+    barraBusca: { display: 'flex', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid #f3f4f6', height: '72px', overflow: 'hidden', position: 'relative', zIndex: 20 },
+    btnSeta: { height: '100%', padding: '0 24px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    inputBusca: { flexGrow: 1, height: '100%', border: 'none', padding: '0 8px', fontSize: '18px', color: 'var(--sim-green-start)', outline: 'none' },
+    btnEnviar: { height: '100%', padding: '0 24px', background: 'var(--sim-green-gradient)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTopRightRadius: '8px', borderBottomRightRadius: '8px' },
     
-    painelFiltros: { backgroundColor: '#EBEBEB', borderRadius: '0 0 24px 24px', padding: '32px 24px 24px 24px', marginTop: '-20px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' },
+    painelFiltros: { backgroundColor: 'var(--sim-bg)', borderRadius: '0 0 8px 8px', padding: '32px 24px 24px 24px', marginTop: '-20px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' },
     linhaGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', alignItems: 'flex-start' },
     colunaFiltro: { display: 'flex', flexDirection: 'column', gap: '6px' },
-    label: { fontSize: '16px', fontWeight: 'bold', color: '#0B521E' },
+    label: { fontSize: '16px', fontWeight: 'bold', color: 'var(--sim-green-start)' },
     grupoBotoes: { display: 'flex', gap: '8px' },
     
-    // O segredo do seu design: verde escuro total ou 25% de opacidade
-    btnFiltroAtivo: { flex: 1, padding: '10px 0', backgroundColor: '#0B521E', color: '#ffffff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s' },
-    btnFiltroInativo: { flex: 1, padding: '10px 0', backgroundColor: '#0B521E', color: '#ffffff', opacity: 0.25, border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s' },
+    // Mudança para o Gradiente oficial do layout
+    btnFiltroAtivo: { flex: 1, padding: '10px 0', background: 'var(--sim-green-gradient)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s', opacity: 1 },
+    btnFiltroInativo: { flex: 1, padding: '10px 0', background: 'var(--sim-green-gradient)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s', opacity: 0.25 },
     
     faixaPreco: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', paddingTop: '16px', borderTop: '1px solid #d1d5db' },
     inputsPrecoContainer: { display: 'flex', gap: '16px', maxWidth: '400px', width: '100%' },
-    inputPreco: { width: '50%', backgroundColor: '#ffffff', border: 'none', borderRadius: '12px', padding: '10px 16px', fontSize: '14px', color: '#0B521E', outline: 'none', textAlign: 'center', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' }
+    inputPreco: { width: '50%', backgroundColor: '#ffffff', border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', color: 'var(--sim-green-start)', outline: 'none', textAlign: 'center', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' }
   };
 
   const buscarImoveis = async (pagina = 1) => {
@@ -87,7 +87,7 @@ export default function FiltrosBusca() {
           onClick={() => setIsOpen(!isOpen)}
           style={estilos.btnSeta}
         >
-          <svg style={{ width: '28px', height: '28px', color: '#0B521E', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <svg style={{ width: '28px', height: '28px', color: 'var(--sim-green-start)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
@@ -107,7 +107,7 @@ export default function FiltrosBusca() {
         </button>
       </form>
 
-      {/* PAINEL EXPANSÍVEL CINZA (Baseado no seu island filtros.png) */}
+      {/* PAINEL EXPANSÍVEL CINZA */}
       {isOpen && (
         <div style={estilos.painelFiltros}>
           <div style={estilos.linhaGrid}>
@@ -121,7 +121,7 @@ export default function FiltrosBusca() {
                     key={t}
                     type="button"
                     onClick={() => { setTipo(t); setPaginaAtual(1); }}
-                    style={tipo === t ? estilos.btnFiltroAtivo : estilos.btnFiltroInativo}
+                    style={tipo === t ? estilos.btnFiltroAtivo : estilos.btnFiltroInactive || estilos.btnFiltroInativo}
                   >
                     {t}
                   </button>
@@ -155,7 +155,7 @@ export default function FiltrosBusca() {
                     key={num}
                     type="button"
                     onClick={() => setBanheiros(banheiros === num ? null : num)}
-                    style={banheiros === num ? estilos.btnFiltroAtivo : estilos.btnFiltroInativo}
+                    style={banheiros === num ? estilos.btnFiltroAtivo : estilos.btnFiltroInactive || estilos.btnFiltroInativo}
                   >
                     +{num}
                   </button>
@@ -188,14 +188,14 @@ export default function FiltrosBusca() {
             <div style={estilos.inputsPrecoContainer}>
               <input
                 type="number"
-                placeholder="Valor minimo"
+                placeholder="Valor mínimo"
                 value={precoMin}
                 onChange={(e) => setPrecoMin(e.target.value)}
                 style={estilos.inputPreco}
               />
               <input
                 type="number"
-                placeholder="Valor maximo"
+                placeholder="Valor máximo"
                 value={precoMax}
                 onChange={(e) => setPrecoMax(e.target.value)}
                 style={estilos.inputPreco}

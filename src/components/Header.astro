@@ -21,7 +21,6 @@
     left: 0;
     width: 100%;
     z-index: 50;
-    background: transparent;
   }
 
   .header-content {
@@ -36,7 +35,7 @@
   .header-content .logo {
     font-size: 22px;
     font-weight: 700;
-    color: var(--sim-green-start); /* Usando a variável */
+    color: var(--sim-text-light); /* Usando a variável */
     text-decoration: none;
   }
 
@@ -47,23 +46,22 @@
   }
 
   .nav-links a {
-    color: var(--sim-green-start);
+    color: var(--sim-text-light);
     text-decoration: none;
     font-weight: 700;
-    font-style: italic; /* Inter Bold Italic */
     font-size: 16px;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s ease;
   }
 
   .nav-links a:hover {
-    opacity: 0.8;
+    opacity: 0.7;
   }
 
   .nav-links .btn-anunciar {
     background: var(--sim-green-gradient); /* Aplicando o gradiente */
     color: #ffffff !important;
     padding: 10px 20px;
-    border-radius: 20px;
+    border-radius: 8px;
     font-style: normal;
   }
 </style>
