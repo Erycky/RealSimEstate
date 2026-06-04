@@ -2,6 +2,47 @@
 // src/pages/index.astro
 import Layout from "../layouts/Layout.astro";
 import FiltrosBusca from "../components/react/FiltrosBusca";
+import CardImovel from "../components/react/CardImovel";
+import { supabase } from "../lib/supabase";
+
+// Buscando os imóveis aprovados/ativos e trazendo junto a primeira imagem relacionada da tabela 'imagens_imovel'
+const { data: imoveisData, error } = await supabase
+  .from("imoveis")
+  .select(
+    `
+    id,
+    titulo,
+    tipo,
+    preco,
+    quartos,
+    banheiros,
+    garagens,
+    status,
+    imagens_imovel (
+      url_storage
+    )
+  `,
+  )
+  // Se você tiver uma política baseada em status (ex: só mostrar aprovados), pode filtrar aqui.
+  // Se quiser listar todos por enquanto, comente a linha abaixo:
+  // .eq("status", "aprovado")
+  .order("created_at", { ascending: false });
+
+if (error) {
+  console.error("Erro ao buscar imóveis do Supabase:", error.message);
+}
+
+// Tratando os dados para que o componente CardImovel receba a imagem_url certinha
+const imoveis = imoveisData?.map((imovel) => {
+  // Pega a primeira imagem cadastrada se houver, ou define um fallback/padrão caso esteja vazio
+  const primeiraImagem =
+    imovel.imagens_imovel?.[0]?.url_storage || "/fallback-imovel.jpg";
+
+  return {
+    ...imovel,
+    imagem_url: primeiraImagem,
+  };
+});
 ---
 
 <Layout title="RealSimEstate | Encontre seu próximo porto seguro">
@@ -18,9 +59,29 @@ import FiltrosBusca from "../components/react/FiltrosBusca";
   <section class="search-section">
     <FiltrosBusca client:load />
   </section>
+
+  <main class="main-content">
+    <section class="vitrine-section">
+      <div class="vitrine-header">
+        <h2>Imóveis em Destaque</h2>
+        <p>Confira as ofertas exclusivas selecionadas para você</p>
+      </div>
+
+      <div class="imoveis-grid">
+        {
+          imoveis && imoveis.length > 0 ? (
+            imoveis.map((imovel) => <CardImovel imovel={imovel} />)
+          ) : (
+            <p class="empty-state">Nenhum imóvel encontrado no momento.</p>
+          )
+        }
+      </div>
+    </section>
+  </main>
 </Layout>
 
 <style>
+  /* ... Seus estilos CSS permanecem exatamente os mesmos aqui ... */
   .hero-banner {
     width: 100%;
     height: 480px;
@@ -45,7 +106,7 @@ import FiltrosBusca from "../components/react/FiltrosBusca";
   .hero-title {
     font-weight: 700;
     font-size: 42px;
-    color: var(--sim-text-light); /* Variável global */
+    color: var(--sim-text-light);
     margin-bottom: 16px;
   }
 
@@ -53,7 +114,7 @@ import FiltrosBusca from "../components/react/FiltrosBusca";
     font-weight: 400;
     font-style: italic;
     font-size: 16px;
-    color: var(--sim-text-light); /* Variável global */
+    color: var(--sim-text-light);
     max-width: 600px;
   }
 
@@ -61,6 +122,43 @@ import FiltrosBusca from "../components/react/FiltrosBusca";
     position: relative;
     z-index: 20;
     margin-top: -40px;
+  }
+
+  .main-content {
+    max-width: 1200px;
+    margin: 64px auto;
+    padding: 0 16px;
+  }
+
+  .vitrine-header {
+    margin-bottom: 32px;
+    font-family: sans-serif;
+  }
+
+  .vitrine-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--sim-text-dark);
+    margin-bottom: 6px;
+  }
+
+  .vitrine-header p {
+    font-size: 15px;
+    color: #6b7280;
+  }
+
+  .imoveis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #6b7280;
+    font-size: 16px;
+    padding: 40px 0;
   }
 
   :global(.animate-fadeIn) {

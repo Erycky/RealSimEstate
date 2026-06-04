@@ -1,0 +1,102 @@
+---
+import Layout from "../layouts/Layout.astro";
+import FormularioLogin from "../components/react/FormularioLogin";
+---
+
+<Layout title="RealSimEstate | Login">
+  <main class="login-container animate-fadeIn">
+    <div class="login-wrapper">
+      <FormularioLogin client:load />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 0 16px;
+  }
+
+  .login-wrapper {
+    background: #ffffff;
+    padding: 40px 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  :global(.login-box h3) {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--sim-text-dark, #111827);
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  :global(.login-box p) {
+    font-size: 14px;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  /* Reaproveitando os estilos do formulário que você já tem */
+  :global(.form-crud) {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  :global(.form-group) {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  :global(.form-group label) {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  :global(.form-group input) {
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+  }
+
+  :global(.form-group input:focus) {
+    border-color: #15803d;
+  }
+
+  :global(.btn-enviar) {
+    background: var(--sim-green-gradient, #15803d);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  :global(.alerta.erro) {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    text-align: center;
+    font-weight: 600;
+  }
+</style>

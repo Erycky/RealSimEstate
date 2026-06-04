@@ -1,0 +1,111 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import FormularioCorretor from "../../components/react/FormularioCorretor";
+
+// Aqui futuramente você pode colocar um check de sessão no servidor
+// para garantir que APENAS usuários com role 'admin' acessem essa página.
+---
+
+<Layout title="Painel Admin | Gerenciar Corretores">
+  <main class="admin-container animate-fadeIn">
+    <div class="admin-header">
+      <a href="/admin/novo" class="btn-voltar">← Voltar para Imóveis</a>
+      <h2>Controle de Equipe</h2>
+    </div>
+
+    <div class="form-wrapper">
+      <FormularioCorretor client:load />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* Reaproveita exatamente os mesmos estilos elegantes que usamos no novo.astro */
+  .admin-container {
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 0 16px;
+    font-family: sans-serif;
+  }
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  .btn-voltar {
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .admin-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+  }
+  .form-wrapper {
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+  }
+
+  :global(.form-crud) {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  :global(.form-group) {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  :global(.form-group label) {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+  }
+  :global(.form-group input) {
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+  }
+  :global(.form-group input:focus) {
+    border-color: #15803d;
+  }
+  :global(.btn-enviar) {
+    background: #15803d;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+  :global(.btn-enviar:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  :global(.alerta) {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  :global(.alerta.sucesso) {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+  :global(.alerta.erro) {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+</style>

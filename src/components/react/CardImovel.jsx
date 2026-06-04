@@ -14,7 +14,7 @@ export default function CardImovel({ imovel }) {
   const estilos = {
     card: {
       backgroundColor: '#ffffff',
-      borderRadius: '24px',
+      borderRadius: '8px',
       boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)',
       border: '1px solid #f3f4f6',
       overflow: 'hidden',
@@ -45,7 +45,7 @@ export default function CardImovel({ imovel }) {
       fontWeight: '700',
       fontSize: '14px',
       padding: '6px 16px',
-      borderRadius: '12px',
+      borderRadius: '8px',
       boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
       textTransform: 'capitalize',
       fontFamily: 'sans-serif'
@@ -110,7 +110,7 @@ export default function CardImovel({ imovel }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: '16px',
+      borderRadius: '8px',
       transition: 'opacity 0.2s ease',
       boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
       flexShrink: 0,
