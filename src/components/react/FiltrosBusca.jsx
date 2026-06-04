@@ -25,7 +25,7 @@ export default function FiltrosBusca() {
     barraBusca: { display: 'flex', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid #f3f4f6', height: '72px', overflow: 'hidden', position: 'relative', zIndex: 20 },
     btnSeta: { height: '100%', padding: '0 24px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
     inputBusca: { flexGrow: 1, height: '100%', border: 'none', padding: '0 8px', fontSize: '18px', color: 'var(--sim-green-start)', outline: 'none' },
-    btnEnviar: { height: '100%', padding: '0 24px', background: 'var(--sim-green-gradient)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTopRightRadius: '8px', borderBottomRightRadius: '8px' },
+    btnEnviar: { height: '100%', padding: '0 24px', background: 'var(--sim-green-gradient)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTopRightRadius: '8px', borderBottomRightRadius: '8px'},
     
     painelFiltros: { backgroundColor: 'var(--sim-bg)', borderRadius: '0 0 8px 8px', padding: '32px 24px 24px 24px', marginTop: '-20px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' },
     linhaGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', alignItems: 'flex-start' },
