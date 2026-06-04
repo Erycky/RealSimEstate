@@ -1,131 +1,127 @@
 // src/components/react/FiltrosBusca.jsx
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import CardImovel from './CardImovel'; // Importando o card que criamos!
 
 export default function FiltrosBusca() {
-  // 1. Estados dos Filtros
   const [buscaTexto, setBuscaTexto] = useState('');
-  const [tipo, setTipo] = useState('Comprar'); // 'Comprar' ou 'Alugar'
+  const [tipo, setTipo] = useState('Comprar'); 
   const [quartos, setQuartos] = useState(null);
   const [banheiros, setBanheiros] = useState(null);
   const [garagem, setGaragem] = useState(null);
   const [precoMin, setPrecoMin] = useState('');
   const [precoMax, setPrecoMax] = useState('');
 
-  // 2. Estados de Paginação e Dados
-  const [imoveis, setImoveis] = useState([]); // Armazena os 8 imóveis da página atual
-  const [isOpen, setIsOpen] = useState(false); 
+  const [imoveis, setImoveis] = useState([]); 
+  const [isOpen, setIsOpen] = useState(true); 
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [carregando, setCarregando] = useState(false);
 
   const ITENS_POR_PAGINA = 8;
 
-  // 3. Função que faz a Query escalável no Supabase
+  // Estilos CSS Fixos para garantir o seu design sem depender do Tailwind
+  const estilos = {
+    container: { width: '100%', maxWidth: '900px', margin: '0 auto', marginTop: '-40px', padding: '0 16px', fontFamily: 'sans-serif' },
+    barraBusca: { display: 'flex', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '32px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid #f3f4f6', height: '72px', overflow: 'hidden', position: 'relative', zIndex: 20 },
+    btnSeta: { height: '100%', px: '24px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 24px' },
+    inputBusca: { flexGrow: 1, height: '100%', border: 'none', padding: '0 8px', fontSize: '18px', color: '#0B521E', outline: 'none' },
+    btnEnviar: { height: '100%', padding: '0 32px', backgroundColor: '#0B521E', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTopRightRadius: '32px', borderBottomRightRadius: '32px' },
+    
+    painelFiltros: { backgroundColor: '#EBEBEB', borderRadius: '0 0 24px 24px', padding: '32px 24px 24px 24px', marginTop: '-20px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' },
+    linhaGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', alignItems: 'flex-start' },
+    colunaFiltro: { display: 'flex', flexDirection: 'column', gap: '6px' },
+    label: { fontSize: '16px', fontWeight: 'bold', color: '#0B521E' },
+    grupoBotoes: { display: 'flex', gap: '8px' },
+    
+    // O segredo do seu design: verde escuro total ou 25% de opacidade
+    btnFiltroAtivo: { flex: 1, padding: '10px 0', backgroundColor: '#0B521E', color: '#ffffff', border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s' },
+    btnFiltroInativo: { flex: 1, padding: '10px 0', backgroundColor: '#0B521E', color: '#ffffff', opacity: 0.25, border: 'none', borderRadius: '12px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s' },
+    
+    faixaPreco: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', paddingTop: '16px', borderTop: '1px solid #d1d5db' },
+    inputsPrecoContainer: { display: 'flex', gap: '16px', maxWidth: '400px', width: '100%' },
+    inputPreco: { width: '50%', backgroundColor: '#ffffff', border: 'none', borderRadius: '12px', padding: '10px 16px', fontSize: '14px', color: '#0B521E', outline: 'none', textAlign: 'center', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' }
+  };
+
   const buscarImoveis = async (pagina = 1) => {
     setCarregando(true);
-    
-    // Calcula os índices do range do Postgres (Abordagem 2)
     const de = (pagina - 1) * ITENS_POR_PAGINA;
     const ate = de + ITENS_POR_PAGINA - 1;
 
-    let query = supabase
-      .from('imoveis')
-      .select('*', { count: 'exact' });
+    let query = supabase.from('imoveis').select('*', { count: 'exact' });
 
-    // Filtros dinâmicos no banco
     if (tipo) query = query.eq('tipo', tipo.toLowerCase());
     if (quartos) query = query.gte('quartos', quartos);
     if (banheiros) query = query.gte('banheiros', banheiros);
     if (garagem) query = query.gte('garagens', garagem);
     if (precoMin) query = query.gte('preco', parseFloat(precoMin));
     if (precoMax) query = query.lte('preco', parseFloat(precoMax));
-    
-    if (buscaTexto) {
-      query = query.ilike('titulo', `%${buscaTexto}%`);
-    }
+    if (buscaTexto) query = query.ilike('titulo', `%${buscaTexto}%`);
 
-    // Ordena por ID ou data de criação para manter a paginação consistente
     query = query.order('id', { ascending: true }).range(de, ate);
-
     const { data, count, error } = await query;
 
     if (!error && data) {
-      setImoveis(data); // Atualiza os imóveis da tela com os novos 8 resultados
+      setImoveis(data);
       setTotalPaginas(Math.ceil(count / ITENS_POR_PAGINA));
-    } else {
-      console.error('Erro ao buscar imóveis:', error);
     }
     setCarregando(false);
   };
 
-  // Dispara a busca automática ao trocar de página ou mudar Venda/Aluguel
   useEffect(() => {
     buscarImoveis(paginaAtual);
   }, [tipo, paginaAtual]);
 
   const handleBuscar = (e) => {
     e.preventDefault();
-    setPaginaAtual(1); // Sempre reseta para a página 1 ao submeter uma nova busca
+    setPaginaAtual(1);
     buscarImoveis(1);
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-8">
+    <div style={estilos.container}>
       
-      {/* CONTAINER DA BARRA DE BUSCA (Centralizado e controlado) */}
-      <div className="max-w-4xl mx-auto mb-12">
-        <form onSubmit={handleBuscar} className="flex items-center bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden h-16 relative z-20">
-          
-          {/* Seta para expandir filtros */}
-          <button
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className="h-full px-5 text-gray-500 hover:text-[#005c23] transition-colors flex items-center justify-center border-r border-gray-100"
-          >
-            <svg 
-              className={`w-6 h-6 transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+      {/* BARRA DE BUSCA PRINCIPAL */}
+      <form onSubmit={handleBuscar} style={estilos.barraBusca}>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          style={estilos.btnSeta}
+        >
+          <svg style={{ width: '28px', height: '28px', color: '#0B521E', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
 
-          {/* Input de Texto */}
-          <input
-            type="text"
-            value={buscaTexto}
-            onChange={(e) => setBuscaTexto(e.target.value)}
-            placeholder="Busque por casas, apartamentos, studios..."
-            className="flex-grow h-full px-5 text-gray-700 placeholder-gray-400 focus:outline-none text-base md:text-lg"
-          />
+        <input
+          type="text"
+          value={buscaTexto}
+          onChange={(e) => setBuscaTexto(e.target.value)}
+          placeholder="Busque por casas, apartamentos, studios..."
+          style={estilos.inputBusca}
+        />
 
-          {/* Botão de Enviar (Seta Direita Verde) */}
-          <button
-            type="submit"
-            className="h-full px-6 bg-[#005c23] hover:bg-[#00461a] text-white transition-colors flex items-center justify-center"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        </form>
+        <button type="submit" style={estilos.btnEnviar}>
+          <svg style={{ width: '28px', height: '28px', color: '#ffffff' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </form>
 
-        {/* PAINEL DE FILTROS EXPANSÍVEL */}
-        <div className={`bg-gray-100/90 backdrop-blur-sm rounded-b-2xl shadow-inner border-x border-b border-gray-200 p-6 space-y-6 transition-all duration-300 origin-top ${isOpen ? 'max-h-[500px] opacity-100 mt-[-8px] pt-8' : 'max-h-0 opacity-0 pointer-events-none hidden'}`}>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+      {/* PAINEL EXPANSÍVEL CINZA (Baseado no seu island filtros.png) */}
+      {isOpen && (
+        <div style={estilos.painelFiltros}>
+          <div style={estilos.linhaGrid}>
+            
             {/* Tipo */}
-            <div className="flex flex-col gap-2">
-              <span className="text-sm font-semibold text-[#005c23]">Tipo:</span>
-              <div className="flex gap-2">
+            <div style={estilos.colunaFiltro}>
+              <span style={estilos.label}>Tipo:</span>
+              <div style={estilos.grupoBotoes}>
                 {['Comprar', 'Alugar'].map((t) => (
                   <button
                     key={t}
                     type="button"
                     onClick={() => { setTipo(t); setPaginaAtual(1); }}
-                    className={`flex-1 py-1.5 px-3 text-xs font-medium rounded-lg transition-colors ${tipo === t ? 'bg-[#005c23] text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+                    style={tipo === t ? estilos.btnFiltroAtivo : estilos.btnFiltroInativo}
                   >
                     {t}
                   </button>
@@ -134,15 +130,15 @@ export default function FiltrosBusca() {
             </div>
 
             {/* Quartos */}
-            <div className="flex flex-col gap-2">
-              <span className="text-sm font-semibold text-[#005c23]">Quartos:</span>
-              <div className="flex gap-1.5">
+            <div style={estilos.colunaFiltro}>
+              <span style={estilos.label}>Quartos:</span>
+              <div style={estilos.grupoBotoes}>
                 {[1, 2, 3].map((num) => (
                   <button
                     key={num}
                     type="button"
                     onClick={() => setQuartos(quartos === num ? null : num)}
-                    className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${quartos === num ? 'bg-[#005c23] text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+                    style={quartos === num ? estilos.btnFiltroAtivo : estilos.btnFiltroInativo}
                   >
                     +{num}
                   </button>
@@ -151,15 +147,15 @@ export default function FiltrosBusca() {
             </div>
 
             {/* Banheiros */}
-            <div className="flex flex-col gap-2">
-              <span className="text-sm font-semibold text-[#005c23]">Banheiros:</span>
-              <div className="flex gap-1.5">
+            <div style={estilos.colunaFiltro}>
+              <span style={estilos.label}>Banheiros:</span>
+              <div style={estilos.grupoBotoes}>
                 {[1, 2, 3].map((num) => (
                   <button
                     key={num}
                     type="button"
                     onClick={() => setBanheiros(banheiros === num ? null : num)}
-                    className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${banheiros === num ? 'bg-[#005c23] text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+                    style={banheiros === num ? estilos.btnFiltroAtivo : estilos.btnFiltroInativo}
                   >
                     +{num}
                   </button>
@@ -168,76 +164,45 @@ export default function FiltrosBusca() {
             </div>
 
             {/* Garagem */}
-            <div className="flex flex-col gap-2">
-              <span className="text-sm font-semibold text-[#005c23]">Garagem:</span>
-              <div className="flex gap-1.5">
+            <div style={estilos.colunaFiltro}>
+              <span style={estilos.label}>Garagem:</span>
+              <div style={estilos.grupoBotoes}>
                 {[1, 2, 3].map((num) => (
                   <button
                     key={num}
                     type="button"
                     onClick={() => setGaragem(garagem === num ? null : num)}
-                    className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${garagem === num ? 'bg-[#005c23] text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+                    style={garagem === num ? estilos.btnFiltroAtivo : estilos.btnFiltroInativo}
                   >
                     +{num}
                   </button>
                 ))}
               </div>
             </div>
+
           </div>
 
           {/* Faixa de Preço */}
-          <div className="flex flex-col items-center gap-2 pt-2 border-t border-gray-200/60">
-            <span className="text-sm font-semibold text-[#005c23]">Faixa de preço:</span>
-            <div className="flex gap-4 max-w-md w-full">
+          <div style={estilos.faixaPreco}>
+            <span style={estilos.label}>Faixa de preço:</span>
+            <div style={estilos.inputsPrecoContainer}>
               <input
                 type="number"
-                placeholder="Valor mínimo"
+                placeholder="Valor minimo"
                 value={precoMin}
                 onChange={(e) => setPrecoMin(e.target.value)}
-                className="w-1/2 bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#005c23]"
+                style={estilos.inputPreco}
               />
               <input
                 type="number"
-                placeholder="Valor máximo"
+                placeholder="Valor maximo"
                 value={precoMax}
                 onChange={(e) => setPrecoMax(e.target.value)}
-                className="w-1/2 bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#005c23]"
+                style={estilos.inputPreco}
               />
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* 4. A GRADE DE CARDS (4 colunas na linha) */}
-      {carregando ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#005c23]"></div>
-        </div>
-      ) : imoveis.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
-          <p className="text-xl font-medium">Nenhum imóvel encontrado com esses filtros.</p>
-          <p className="text-sm mt-1">Tente ajustar seus critérios de busca.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 row-gap-8 animate-fadeIn">
-          {imoveis.map((imovel) => (
-            <CardImovel key={imovel.id} imovel={imovel} />
-          ))}
-        </div>
-      )}
-
-      {/* 5. COMPONENTE DE PAGINAÇÃO */}
-      {totalPaginas > 1 && !carregando && (
-        <div className="flex justify-center items-center gap-2 mt-12 pb-8">
-          {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((pg) => (
-            <button
-              key={pg}
-              onClick={() => setPaginaAtual(pg)}
-              className={`w-10 h-10 rounded-xl font-bold text-sm border transition-all duration-200 ${paginaAtual === pg ? 'bg-[#005c23] text-white border-[#005c23] shadow-md scale-105' : 'bg-white text-gray-600 hover:bg-gray-50 border-gray-200'}`}
-            >
-              {pg}
-            </button>
-          ))}
         </div>
       )}
     </div>

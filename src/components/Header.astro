@@ -1,0 +1,69 @@
+---
+// src/components/Header.astro
+---
+
+<header class="header-container">
+  <div class="header-content">
+    <a href="/" class="logo">RealSimEstate</a>
+    <nav class="nav-links">
+      <a href="/comprar">Comprar</a>
+      <a href="/alugar">Alugar</a>
+      <a href="/contato">Contato</a>
+      <a href="/admin" class="btn-anunciar">Anunciar</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 50;
+    background: transparent;
+  }
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-content .logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--sim-green-start); /* Usando a variável */
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .nav-links a {
+    color: var(--sim-green-start);
+    text-decoration: none;
+    font-weight: 700;
+    font-style: italic; /* Inter Bold Italic */
+    font-size: 16px;
+    transition: opacity 0.2s;
+  }
+
+  .nav-links a:hover {
+    opacity: 0.8;
+  }
+
+  .nav-links .btn-anunciar {
+    background: var(--sim-green-gradient); /* Aplicando o gradiente */
+    color: #ffffff !important;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-style: normal;
+  }
+</style>

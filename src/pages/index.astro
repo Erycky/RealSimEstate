@@ -5,47 +5,64 @@ import FiltrosBusca from "../components/react/FiltrosBusca";
 ---
 
 <Layout title="RealSimEstate | Encontre seu próximo porto seguro">
-  <section
-    class="relative h-[440px] w-full flex items-center justify-center overflow-hidden bg-emerald-950"
-  >
-    <img
-      src="/hero-bg.jpg"
-      alt="RealSimEstate Background"
-      class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay scale-105"
-    />
-
-    <div
-      class="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent"
-    >
-    </div>
-
-    <div class="relative z-10 text-center px-4 max-w-3xl mx-auto space-y-4">
-      <h1
-        class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight drop-shadow-md"
-      >
-        Encontre seu próximo <span class="text-emerald-400">porto seguro</span>
-      </h1>
-      <p
-        class="text-lg md:text-xl text-emerald-100 font-medium max-w-xl mx-auto drop-shadow-sm"
-      >
+  <section class="hero-banner">
+    <div class="hero-overlay">
+      <h1 class="hero-title">Encontre seu próximo porto seguro</h1>
+      <p class="hero-subtitle">
         Explore os melhores imóveis projetados com precisão e estilo para a sua
         nova jornada.
       </p>
     </div>
   </section>
 
-  <section class="relative z-20 -mt-10">
-    {
-      /* Usamos client:load aqui para o Astro ativar o JavaScript do React 
-      imediatamente no carregamento da página, permitindo as buscas automáticas.
-    */
-    }
+  <section class="search-section">
     <FiltrosBusca client:load />
   </section>
 </Layout>
 
 <style>
-  /* Pequena animação suave para a entrada dos cards na tela */
+  .hero-banner {
+    width: 100%;
+    height: 480px;
+    background-image: url("/hero-bg.jpg");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+
+  .hero-overlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 16px 0 16px;
+  }
+
+  .hero-title {
+    font-weight: 700;
+    font-size: 42px;
+    color: var(--sim-text-dark); /* Variável global */
+    margin-bottom: 16px;
+  }
+
+  .hero-subtitle {
+    font-weight: 400;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--sim-text-muted); /* Variável global */
+    max-width: 600px;
+  }
+
+  .search-section {
+    position: relative;
+    z-index: 20;
+    margin-top: -40px;
+  }
+
   :global(.animate-fadeIn) {
     animation: fadeIn 0.4s ease-out forwards;
   }

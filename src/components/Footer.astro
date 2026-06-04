@@ -1,0 +1,73 @@
+---
+// src/components/Footer.astro
+---
+
+<footer class="footer-container">
+  <div class="footer-content">
+    <div class="footer-brand">
+      <h3>RealSimEstate</h3>
+      <p>(51) 95544-3322</p>
+      <p>contato@realsimestate.com.br</p>
+    </div>
+    <div class="footer-nav">
+      <a href="/comprar">Comprar</a>
+      <a href="/alugar">Alugar</a>
+      <a href="/contato">Contato</a>
+      <a href="/anunciar">Anunciar</a>
+      <a href="/login">Login</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer-container {
+    flex-shrink: 0;
+    width: 100%;
+    background: var(
+      --sim-green-gradient
+    ); /* Seu gradiente centralizado aqui! */
+    color: #ffffff;
+    padding: 48px 16px;
+    margin-top: 64px;
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+
+  .footer-brand h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .footer-brand p {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 6px;
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-nav a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: opacity 0.2s;
+  }
+
+  .footer-nav a:hover {
+    opacity: 0.7;
+  }
+</style>
