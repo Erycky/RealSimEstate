@@ -8,7 +8,7 @@ export default function FiltrosBusca() {
   const [isOpen, setIsOpen] = useState(false); 
   
   const [buscaTexto, setBuscaTexto] = useState('');
-  const [tipo, setTipo] = useState(null); // Corrigido de 'null' string para null nativo
+  const [tipo, setTipo] = useState(null); 
   const [quartos, setQuartos] = useState(null);
   const [banheiros, setBanheiros] = useState(null);
   const [garagem, setGaragem] = useState(null);
@@ -22,25 +22,106 @@ export default function FiltrosBusca() {
 
   const ITENS_POR_PAGINA = 8;
 
+  // 📱 ESTADO PARA DETECTAR SE É CELULAR (MOBILE)
+  const [isCelular, setIsCelular] = useState(false);
+
+  useEffect(() => {
+    const checarLargura = () => {
+      setIsCelular(window.innerWidth < 768);
+    };
+    
+    checarLargura();
+
+    window.addEventListener('resize', checarLargura);
+    return () => window.removeEventListener('resize', checarLargura);
+  }, []);
+
+  // 🎨 ESTILOS ADAPTATIVOS BASEADOS NO `isCelular`
   const estilos = {
     container: { width: '100%', maxWidth: '1200px', margin: '0 auto', padding: '0 16px', fontFamily: 'sans-serif' },
-    wrapperBarra: { maxWidth: '900px', margin: '0 auto', marginTop: '-40px' },
-    barraBusca: { display: 'flex', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid #f3f4f6', height: '72px', overflow: 'hidden', position: 'relative', zIndex: 20 },
-    btnSeta: { height: '100%', padding: '0 24px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-    inputBusca: { flexGrow: 1, height: '100%', border: 'none', padding: '0 8px', fontSize: '18px', color: 'var(--sim-green-start)', outline: 'none' },
-    btnEnviar: { height: '100%', padding: '0 24px', background: 'var(--sim-green-gradient)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTopRightRadius: '8px', borderBottomRightRadius: '8px'},
-    painelFiltros: { backgroundColor: 'var(--sim-bg)', borderRadius: '0 0 8px 8px', padding: '32px 24px 24px 24px', marginTop: '-20px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' },
-    linhaGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', alignItems: 'flex-start' },
+    wrapperBarra: { maxWidth: '900px', margin: '0 auto', marginTop: isCelular ? '-24px' : '-40px' },
+    
+    barraBusca: { 
+      display: 'flex', 
+      flexDirection: isCelular ? 'column' : 'row', 
+      alignItems: 'center', 
+      backgroundColor: '#ffffff', 
+      borderRadius: '8px', 
+      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', 
+      border: '1px solid #f3f4f6', 
+      height: isCelular ? 'auto' : '72px', 
+      padding: isCelular ? '12px' : '0',
+      gap: isCelular ? '12px' : '0',
+      overflow: 'hidden', 
+      position: 'relative', 
+      zIndex: 20 
+    },
+    btnSeta: { 
+      height: isCelular ? '44px' : '100%', 
+      width: isCelular ? '100%' : 'auto',
+      padding: '0 24px', 
+      background: isCelular ? '#f9fafb' : 'none', 
+      borderRadius: isCelular ? '6px' : '0',
+      border: 'none', 
+      cursor: 'pointer', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      gap: '8px' // Espaço maroto entre a seta e o texto "Filtros"
+    },
+    inputBusca: { 
+      width: '100%',
+      flexGrow: 1, 
+      height: isCelular ? '48px' : '100%', 
+      border: isCelular ? '1px solid #e5e7eb' : 'none', 
+      borderRadius: isCelular ? '6px' : '0',
+      padding: isCelular ? '0 12px' : '0 8px', 
+      fontSize: '17px', 
+      color: 'var(--sim-green-start)', 
+      outline: 'none' 
+    },
+    btnEnviar: { 
+      height: isCelular ? '48px' : '100%', 
+      width: isCelular ? '100%' : 'auto',
+      padding: '0 24px', 
+      background: 'var(--sim-green-gradient)', 
+      border: 'none', 
+      cursor: 'pointer', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      borderRadius: isCelular ? '6px' : '0 8px 8px 0'
+    },
+    
+    painelFiltros: { 
+      backgroundColor: 'var(--sim-bg)', 
+      borderRadius: '0 0 8px 8px', 
+      padding: isCelular ? '24px 16px 20px 16px' : '32px 24px 24px 24px', 
+      marginTop: '-20px', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      gap: '24px', 
+      boxShadow: '0 2px 4px rgba(0,0,0,0.05)' 
+    },
+    linhaGrid: { 
+      display: 'grid', 
+      gridTemplateColumns: isCelular ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(180px, 1fr))', 
+      gap: '16px', 
+      alignItems: 'flex-start' 
+    },
     colunaFiltro: { display: 'flex', flexDirection: 'column', gap: '6px' },
-    label: { fontSize: '16px', fontWeight: 'bold', color: 'var(--sim-green-start)' },
-    grupoBotoes: { display: 'flex', gap: '8px' },
-    btnFiltroAtivo: { flex: 1, padding: '10px 0', background: 'var(--sim-green-gradient)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s', opacity: 1 },
-    btnFiltroInativo: { flex: 1, padding: '10px 0', background: 'var(--sim-green-gradient)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s', opacity: 0.25 },
+    label: { fontSize: isCelular ? '14px' : '16px', fontWeight: 'bold', color: 'var(--sim-green-start)' },
+    
+    grupoBotoes: { display: 'flex', gap: isCelular ? '4px' : '8px', flexWrap: 'wrap' },
+    btnFiltroAtivo: { flex: '1 1 auto', minWidth: isCelular ? '45px' : '60px', padding: '10px 4px', background: 'var(--sim-green-gradient)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: isCelular ? '12px' : '14px', cursor: 'pointer', transition: 'all 0.2s', opacity: 1 },
+    btnFiltroInativo: { flex: '1 1 auto', minWidth: isCelular ? '45px' : '60px', padding: '10px 4px', background: 'var(--sim-green-gradient)', color: '#ffffff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: isCelular ? '12px' : '14px', cursor: 'pointer', transition: 'all 0.2s', opacity: 0.25 },
+    
     faixaPreco: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', paddingTop: '16px', borderTop: '1px solid #d1d5db' },
-    inputsPrecoContainer: { display: 'flex', gap: '16px', maxWidth: '400px', width: '100%' },
-    inputPreco: { width: '50%', backgroundColor: '#ffffff', border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', color: 'var(--sim-green-start)', outline: 'none', textAlign: 'center', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' },
-    vitrineHeader: { marginTop: '64px', marginBottom: '32px' },
-    gridResultados: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '32px' },
+    inputsPrecoContainer: { display: 'flex', gap: isCelular ? '12px' : '16px', maxWidth: '400px', width: '100%' },
+    inputPreco: { width: '50%', backgroundColor: '#ffffff', border: isCelular ? '1px solid #e5e7eb' : 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', color: 'var(--sim-green-start)', outline: 'none', textAlign: 'center', boxShadow: isCelular ? 'none' : 'inset 0 2px 4px rgba(0,0,0,0.05)' },
+    
+    vitrineHeader: { marginTop: isCelular ? '40px' : '64px', marginBottom: '32px', textAlign: isCelular ? 'center' : 'left' },
+    gridResultados: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: isCelular ? '20px' : '32px' },
     paginacaoContainer: { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '40px', paddingBottom: '40px' },
     btnPagina: { padding: '8px 16px', backgroundColor: '#ffffff', border: '1px solid #d1d5db', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }
   };
@@ -103,40 +184,45 @@ export default function FiltrosBusca() {
         {/* BARRA DE BUSCA PRINCIPAL */}
         <form onSubmit={handleBuscar} style={estilos.barraBusca}>
           
-          {/* Botão da Seta: Abre e fecha manualmente */}
+          {/* Botão de Filtros: Setinha do Figma + Texto descritivo se for mobile 📱 */}
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
             style={estilos.btnSeta}
           >
-            <svg style={{ width: '28px', height: '28px', color: 'var(--sim-green-start)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg style={{ width: '24px', height: '24px', color: 'var(--sim-green-start)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
+            {isCelular && <span style={{ fontSize: '15px', fontWeight: 'bold', color: 'var(--sim-green-start)' }}>Filtros Avançados</span>}
           </button>
 
-          {/* Input de Texto com Inteligência de Abertura Automática 🧠 */}
+          {/* Input de Texto */}
           <input
             type="text"
             value={buscaTexto}
             onChange={(e) => {
               setBuscaTexto(e.target.value);
-              // 🚀 Se o usuário começar a digitar e o painel estiver fechado, a gente ABRE!
               if (!isOpen && e.target.value.length > 0) {
                 setIsOpen(true);
               }
             }}
-            placeholder="Busque por casas, apartamentos, bairros..."
+            placeholder="Busque por casas, bairros..."
             style={estilos.inputBusca}
           />
 
+          {/* Botão de Envio adaptativo: Texto "Buscar" no Mobile ou Seta no Desktop 🚀 */}
           <button type="submit" style={estilos.btnEnviar}>
-            <svg style={{ width: '28px', height: '28px', color: '#ffffff' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            {isCelular ? (
+              <span style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '16px', letterSpacing: '0.5px' }}>Buscar</span>
+            ) : (
+              <svg style={{ width: '28px', height: '28px', color: '#ffffff' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            )}
           </button>
         </form>
 
-        {/* PAINEL EXPANSÍVEL (SÓ COMPILA SE JÁ ESTIVER ABERTO) */}
+        {/* PAINEL EXPANSÍVEL */}
         {isOpen && (
           <div style={estilos.painelFiltros}>
             <div style={estilos.linhaGrid}>

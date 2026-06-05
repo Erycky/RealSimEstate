@@ -5,6 +5,17 @@
 <header class="header-container">
   <div class="header-content">
     <a href="/" class="logo">RealSimEstate</a>
+
+    <button
+      class="hamburger-btn"
+      aria-label="Menu de navegação"
+      aria-expanded="false"
+    >
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
     <nav class="nav-links">
       <a href="/comprar">Comprar</a>
       <a href="/alugar">Alugar</a>
@@ -13,6 +24,21 @@
     </nav>
   </div>
 </header>
+
+<script>
+  const hamburgerBtn = document.querySelector(".hamburger-btn");
+  const navLinks = document.querySelector(".nav-links");
+
+  if (hamburgerBtn && navLinks) {
+    hamburgerBtn.addEventListener("click", () => {
+      const isAberto = navLinks.classList.toggle("active");
+      hamburgerBtn.classList.toggle("active");
+
+      // Acessibilidade: atualiza o estado do leitor de tela
+      hamburgerBtn.setAttribute("aria-expanded", isAberto ? "true" : "false");
+    });
+  }
+</script>
 
 <style>
   .header-container {
@@ -30,13 +56,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
   }
 
   .header-content .logo {
     font-size: 22px;
     font-weight: 700;
-    color: var(--sim-text-light); /* Usando a variável */
+    color: var(--sim-text-light);
     text-decoration: none;
+    z-index: 60; /* Fica acima da gaveta mobile */
   }
 
   .nav-links {
@@ -58,10 +86,85 @@
   }
 
   .nav-links .btn-anunciar {
-    background: var(--sim-green-gradient); /* Aplicando o gradiente */
+    background: var(--sim-green-gradient);
     color: #ffffff !important;
     padding: 10px 20px;
     border-radius: 8px;
     font-style: normal;
+  }
+
+  /* 📱 ESTILOS DO BOTÃO HAMBÚRGUER (Escondido por padrão no PC) */
+  .hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 60; /* Fica acima de tudo */
+  }
+
+  .hamburger-btn .bar {
+    width: 100%;
+    height: 3px;
+    background-color: var(--sim-text-light);
+    border-radius: 4px;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Animação do Hambúrguer virando "X" */
+  .hamburger-btn.active .bar:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+  }
+
+  .hamburger-btn.active .bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger-btn.active .bar:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+  }
+
+  /* 🛠️ MEDIA QUERY: CRIA O MENU GAVETA PARA MOBILE */
+  @media (max-width: 768px) {
+    .hamburger-btn {
+      display: flex; /* Revela o botão no celular */
+    }
+
+    .nav-links {
+      position: fixed;
+      top: 0;
+      right: -100%; /* Começa totalmente escondido na direita */
+      width: 75%; /* Ocupa 75% da largura da tela */
+      height: 100vh;
+      background-color: #0b1410; /* Fundo escuro premium que combina com o tema */
+      box-shadow: -4px 0 15px rgba(0, 0, 0, 0.3);
+      flex-direction: column;
+      justify-content: center;
+      gap: 40px;
+      padding: 40px;
+      transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      z-index: 55;
+    }
+
+    /* Quando a classe .active for injetada via JS, a gaveta desliza para dentro da tela */
+    .nav-links.active {
+      right: 0;
+    }
+
+    .nav-links a {
+      font-size: 20px; /* Links maiores fáceis de tocar no celular */
+      width: 100%;
+      text-align: center;
+    }
+
+    .nav-links .btn-anunciar {
+      width: auto;
+      display: inline-block;
+      text-align: center;
+    }
   }
 </style>

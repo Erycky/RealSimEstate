@@ -8,17 +8,58 @@ export default function CardImovel({ imovel }) {
     : ['/fallback-imovel.jpg'];
 
   const [fotoAtivaIndex, setFotoAtivaIndex] = useState(0);
+  
+  // Estados para gerenciar o gesto de arrastar (Touch Swipe) 📱
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  // Distância mínima em pixels para validar o arrasto
+  const MIN_SWIPE_DISTANCE = 50;
 
   const fotoAnterior = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setFotoAtivaIndex((prev) => (prev === 0 ? fotos.length - 1 : prev - 1));
   };
 
   const proximaFoto = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setFotoAtivaIndex((prev) => (prev === fotos.length - 1 ? 0 : prev + 1));
+  };
+
+  // Funções para capturar os movimentos do dedo na tela
+  const handleTouchStart = (e) => {
+    setTouchEnd(null); // Reseta para evitar herança de arrastos anteriores
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > MIN_SWIPE_DISTANCE;
+    const isRightSwipe = distance < -MIN_SWIPE_DISTANCE;
+
+    if (isLeftSwipe || isRightSwipe) {
+      // Impede comportamentos estranhos na página durante o swipe válido
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (isLeftSwipe) {
+        proximaFoto(); // Arrastou para a esquerda -> Avança foto
+      } else if (isRightSwipe) {
+        fotoAnterior(); // Arrastou para a direita -> Volta foto
+      }
+    }
   };
 
   // Estilos inline consolidados
@@ -36,7 +77,8 @@ export default function CardImovel({ imovel }) {
       width: '100%',
       height: '320px',
       overflow: 'hidden',
-      backgroundColor: '#f3f4f6'
+      backgroundColor: '#f3f4f6',
+      touchAction: 'pan-y' // Permite o scroll vertical da página mas trava o horizontal no carrossel
     },
     trilhoImagens: {
       display: 'flex',
@@ -52,25 +94,26 @@ export default function CardImovel({ imovel }) {
     imagem: {
       width: '100%',
       height: '100%',
-      objectFit: 'cover'
+      objectFit: 'cover',
+      userSelect: 'none'
     },
     setaLateral: {
       position: 'absolute',
       top: '50%',
       transform: 'translateY(-50%)',
-      background: 'rgba(0, 0, 0, 0.35)',
+      background: 'rgba(0, 0, 0, 0.45)',
       color: '#ffffff',
       border: 'none',
       borderRadius: '50%',
-      width: '32px',
-      height: '32px',
+      width: '36px',
+      height: '36px',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 5,
-      fontSize: '20px',
-      userSelect: 'none'
+      userSelect: 'none',
+      transition: 'background-color 0.2s ease'
     },
     containerBolinhas: {
       position: 'absolute',
@@ -109,12 +152,11 @@ export default function CardImovel({ imovel }) {
       zIndex: 4,
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
     },
-    // ESTRUTURA DE LAYOUT PARA O BOTÃO VOLTAR
     conteudoInfo: {
       padding: '16px',
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'flex-end' // Alinha o botão com a base dos ícones
+      alignItems: 'flex-end'
     },
     blocoTextos: {
       display: 'flex',
@@ -140,7 +182,6 @@ export default function CardImovel({ imovel }) {
       color: '#6b7280',
       fontSize: '13px'
     },
-    // O BOTÃO VERDE DA SETINHA IGUAL AO FIGMA
     btnAcao: {
       background: 'var(--sim-green-gradient, #006437)',
       color: '#ffffff',
@@ -152,8 +193,7 @@ export default function CardImovel({ imovel }) {
       alignItems: 'center',
       justifyContent: 'center',
       cursor: 'pointer',
-      transition: 'background-color 0.2s ease',
-      fontSize: '22px',
+      transition: 'transform 0.2s ease, opacity 0.2s ease',
       marginLeft: '12px',
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
     }
@@ -162,16 +202,32 @@ export default function CardImovel({ imovel }) {
   return (
     <div className="card-imovel" style={estilos.card}>
       
-      {/* SEÇÃO SUPERIOR: CARROSSEL */}
-      <div style={estilos.containerFoto}>
+      {/* SEÇÃO SUPERIOR: CARROSSEL COM SUPORTE A SWIPE 📱 */}
+      <div 
+        style={estilos.containerFoto}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         <span style={estilos.badgeTag}>
           {imovel.tipo === 'venda' ? 'Venda' : 'Aluguel'}
         </span>
 
         {fotos.length > 1 && (
           <>
-            <button type="button" onClick={fotoAnterior} style={{ ...estilos.setaLateral, left: '8px' }}>‹</button>
-            <button type="button" onClick={proximaFoto} style={{ ...estilos.setaLateral, right: '8px' }}>›</button>
+            {/* Seta Esquerda */}
+            <button type="button" onClick={fotoAnterior} style={{ ...estilos.setaLateral, left: '8px' }} title="Foto anterior">
+              <svg style={{ width: '20px', height: '20px', color: '#ffffff', transform: 'rotate(90deg)' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {/* Seta Direita */}
+            <button type="button" onClick={proximaFoto} style={{ ...estilos.setaLateral, right: '8px' }} title="Próxima foto">
+              <svg style={{ width: '20px', height: '20px', color: '#ffffff', transform: 'rotate(-90deg)' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </>
         )}
 
@@ -183,6 +239,7 @@ export default function CardImovel({ imovel }) {
                 alt={`${imovel.titulo} - Foto ${index + 1}`}
                 style={estilos.imagem}
                 loading={index === 0 ? "eager" : "lazy"} 
+                draggable="false" // Evita bugs de arrastar imagem nativa do navegador
               />
             </div>
           ))}
@@ -205,7 +262,7 @@ export default function CardImovel({ imovel }) {
         )}
       </div>
 
-      {/* SEÇÃO INFERIOR: TEXTOS + BOTÃO VERDE (CORRIGIDO) */}
+      {/* SEÇÃO INFERIOR: TEXTOS + BOTÃO VERDE */}
       <div style={estilos.conteudoInfo}>
         
         {/* Lado Esquerdo: Informações do Imóvel */}
@@ -223,18 +280,20 @@ export default function CardImovel({ imovel }) {
           </div>
         </div>
 
-        {/* Lado Direito: Botão com a setinha que tinha sumido */}
+        {/* Lado Direito: Botão de Ação */}
         <button 
           type="button" 
           style={estilos.btnAcao}
           onClick={(e) => {
-            // Aqui depois você joga a navegação para a página de detalhes:
-            // window.location.href = `/imovel/${imovel.id}`;
-            console.log('Navegar para o imóvel:', imovel.id);
+            window.location.href = `/imovel/${imovel.id}`;
           }}
           title="Ver detalhes do imóvel"
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
         >
-          →
+          <svg style={{ width: '22px', height: '22px', color: '#ffffff', transform: 'rotate(-90deg)' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </button>
 
       </div>
