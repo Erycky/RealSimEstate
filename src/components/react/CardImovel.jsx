@@ -1,206 +1,244 @@
 // src/components/react/CardImovel.jsx
+import { useState } from 'react';
 
 export default function CardImovel({ imovel }) {
-  
-  const formatarPreco = (valor) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      maximumFractionDigits: 0
-    }).format(valor);
+  // 1. Buscamos todas as URLs das fotos do banco
+  const fotos = imovel.imagens_imovel && imovel.imagens_imovel.length > 0
+    ? imovel.imagens_imovel.map(img => img.url_storage)
+    : ['/fallback-imovel.jpg'];
+
+  const [fotoAtivaIndex, setFotoAtivaIndex] = useState(0);
+
+  const fotoAnterior = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFotoAtivaIndex((prev) => (prev === 0 ? fotos.length - 1 : prev - 1));
   };
 
-  // Objeto de estilos usando os tokens do :root
+  const proximaFoto = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFotoAtivaIndex((prev) => (prev === fotos.length - 1 ? 0 : prev + 1));
+  };
+
+  // Estilos inline consolidados
   const estilos = {
     card: {
       backgroundColor: '#ffffff',
-      borderRadius: '8px',
-      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)',
-      border: '1px solid #f3f4f6',
+      borderRadius: '12px',
       overflow: 'hidden',
+      boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
       display: 'flex',
-      flexDirection: 'column',
-      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-      cursor: 'pointer'
+      flexDirection: 'column'
     },
-    containerImagem: {
+    containerFoto: {
       position: 'relative',
       width: '100%',
-      aspectRatio: '4 / 3',
-      backgroundColor: '#f3f4f6',
-      overflow: 'hidden'
+      height: '320px',
+      overflow: 'hidden',
+      backgroundColor: '#f3f4f6'
+    },
+    trilhoImagens: {
+      display: 'flex',
+      width: `${fotos.length * 100}%`,
+      height: '100%',
+      transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+      transform: `translateX(-${(fotoAtivaIndex * 100) / fotos.length}%)`
+    },
+    wrapperImagem: {
+      width: `${100 / fotos.length}%`,
+      height: '100%'
     },
     imagem: {
       width: '100%',
       height: '100%',
-      objectFit: 'cover',
-      transition: 'transform 0.5s ease'
+      objectFit: 'cover'
     },
-    badgeTipo: {
+    setaLateral: {
       position: 'absolute',
-      top: '16px',
-      right: '16px',
-      backgroundColor: '#ffffff',
-      color: 'var(--sim-green-start)',
-      fontWeight: '700',
-      fontSize: '14px',
-      padding: '6px 16px',
-      borderRadius: '8px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-      textTransform: 'capitalize',
-      fontFamily: 'sans-serif'
-    },
-    corpoCard: {
-      padding: '20px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: '8px',
-      fontFamily: 'sans-serif'
-    },
-    infoEsquerda: {
-      flexGrow: 1,
-      minWidth: 0
-    },
-    titulo: {
-      fontWeight: '700',
-      fontSize: '20px',
-      color: 'var(--sim-text-dark)',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      lineHeight: '1.2'
-    },
-    preco: {
-      fontSize: '24px',
-      fontWeight: '700',
-      color: 'var(--sim-green-start)',
-      marginTop: '4px',
-      letterSpacing: '-0.5px'
-    },
-    sufixoMensal: {
-      fontSize: '12px',
-      fontWeight: '500',
-      color: '#6b7280'
-    },
-    dadosTecnicos: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '16px',
-      marginTop: '12px',
-      color: 'var(--sim-text-muted)',
-      fontWeight: '600',
-      fontSize: '16px'
-    },
-    itemIcone: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '6px'
-    },
-    svgIcone: {
-      width: '20px',
-      height: '20px',
-      color: 'var(--sim-green-start)'
-    },
-    btnDetalhes: {
-      width: '56px',
-      height: '56px',
-      background: 'var(--sim-green-gradient)',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      background: 'rgba(0, 0, 0, 0.35)',
       color: '#ffffff',
+      border: 'none',
+      borderRadius: '50%',
+      width: '32px',
+      height: '32px',
+      cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      zIndex: 5,
+      fontSize: '20px',
+      userSelect: 'none'
+    },
+    containerBolinhas: {
+      position: 'absolute',
+      bottom: '12px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      display: 'flex',
+      gap: '6px',
+      zIndex: 5,
+      backgroundColor: 'rgba(0, 0, 0, 0.25)',
+      padding: '5px 10px',
+      borderRadius: '12px',
+      alignItems: 'center',
+      maxWidth: '85%',
+      flexWrap: 'wrap',
+      justifyContent: 'center'
+    },
+    bolinha: (isAtiva) => ({
+      width: isAtiva ? '8px' : '6px',
+      height: isAtiva ? '8px' : '6px',
+      borderRadius: '50%',
+      backgroundColor: isAtiva ? '#ffffff' : 'rgba(255, 255, 255, 0.45)',
+      transition: 'all 0.25s ease',
+      cursor: 'pointer'
+    }),
+    badgeTag: {
+      position: 'absolute',
+      top: '12px',
+      right: '12px',
+      backgroundColor: '#ffffff',
+      color: 'var(--sim-green-start, #006437)',
+      padding: '4px 12px',
+      borderRadius: '4px',
+      fontWeight: 'bold',
+      fontSize: '12px',
+      zIndex: 4,
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    },
+    // ESTRUTURA DE LAYOUT PARA O BOTÃO VOLTAR
+    conteudoInfo: {
+      padding: '16px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end' // Alinha o botão com a base dos ícones
+    },
+    blocoTextos: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '4px',
+      flex: 1
+    },
+    titulo: {
+      fontSize: '20px',
+      fontWeight: 'bold',
+      margin: 0,
+      color: 'var(--sim-text-dark, #1f2937)'
+    },
+    preco: {
+      color: 'var(--sim-green-start, #006437)',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      margin: '4px 0 8px 0'
+    },
+    iconesSpecs: {
+      display: 'flex',
+      gap: '16px',
+      color: '#6b7280',
+      fontSize: '13px'
+    },
+    // O BOTÃO VERDE DA SETINHA IGUAL AO FIGMA
+    btnAcao: {
+      background: 'var(--sim-green-gradient, #006437)',
+      color: '#ffffff',
+      border: 'none',
       borderRadius: '8px',
-      transition: 'opacity 0.2s ease',
-      boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-      flexShrink: 0,
-      textDecoration: 'none'
+      width: '44px',
+      height: '44px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s ease',
+      fontSize: '22px',
+      marginLeft: '12px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
     }
   };
 
   return (
-    <div 
-      style={estilos.card}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.05)';
-        if(e.currentTarget.querySelector('.img-card')) {
-          e.currentTarget.querySelector('.img-card').style.transform = 'scale(1.04)';
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)';
-        if(e.currentTarget.querySelector('.img-card')) {
-          e.currentTarget.querySelector('.img-card').style.transform = 'scale(1)';
-        }
-      }}
-    >
+    <div className="card-imovel" style={estilos.card}>
       
-      {/* Imagem e Tag */}
-      <div style={estilos.containerImagem}>
-        <img 
-          src={imovel.imagem_url || '/placeholder-imovel.jpg'} 
-          alt={imovel.titulo}
-          style={estilos.imagem}
-          className="img-card"
-          loading="lazy"
-        />
-        <span style={estilos.badgeTipo}>
-          {imovel.tipo}
+      {/* SEÇÃO SUPERIOR: CARROSSEL */}
+      <div style={estilos.containerFoto}>
+        <span style={estilos.badgeTag}>
+          {imovel.tipo === 'venda' ? 'Venda' : 'Aluguel'}
         </span>
+
+        {fotos.length > 1 && (
+          <>
+            <button type="button" onClick={fotoAnterior} style={{ ...estilos.setaLateral, left: '8px' }}>‹</button>
+            <button type="button" onClick={proximaFoto} style={{ ...estilos.setaLateral, right: '8px' }}>›</button>
+          </>
+        )}
+
+        <div style={estilos.trilhoImagens}>
+          {fotos.map((url, index) => (
+            <div key={index} style={estilos.wrapperImagem}>
+              <img 
+                src={url} 
+                alt={`${imovel.titulo} - Foto ${index + 1}`}
+                style={estilos.imagem}
+                loading={index === 0 ? "eager" : "lazy"} 
+              />
+            </div>
+          ))}
+        </div>
+
+        {fotos.length > 1 && (
+          <div style={estilos.containerBolinhas}>
+            {fotos.map((_, index) => (
+              <div
+                key={index}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setFotoAtivaIndex(index);
+                }}
+                style={estilos.bolinha(index === fotoAtivaIndex)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Textos, Preço e Ícones */}
-      <div style={estilos.corpoCard}>
-        <div style={estilos.infoEsquerda}>
-          <h3 style={estilos.titulo} title={imovel.titulo}>
+      {/* SEÇÃO INFERIOR: TEXTOS + BOTÃO VERDE (CORRIGIDO) */}
+      <div style={estilos.conteudoInfo}>
+        
+        {/* Lado Esquerdo: Informações do Imóvel */}
+        <div style={estilos.blocoTextos}>
+          <h3 style={estilos.titulo}>
             {imovel.titulo}
           </h3>
-          
           <p style={estilos.preco}>
-            {formatarPreco(imovel.preco)}
-            {imovel.tipo === 'alugar' && <span style={estilos.sufixoMensal}> /mês</span>}
+            {imovel.tipo === 'aluguel' ? `R$ ${imovel.preco}/mês` : `R$ ${imovel.preco}`}
           </p>
-
-          {/* Dados Técnicos (Quartos, Banheiros, Garagem) */}
-          <div style={estilos.dadosTecnicos}>
-            <div style={estilos.itemIcone}>
-              <span>{imovel.quartos}</span>
-              <svg style={estilos.svgIcone} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
-              </svg>
-            </div>
-
-            <div style={estilos.itemIcone}>
-              <span>{imovel.banheiros}</span>
-              <svg style={estilos.svgIcone} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h16" />
-              </svg>
-            </div>
-
-            <div style={estilos.itemIcone}>
-              <span>{imovel.garagens || 0}</span>
-              <svg style={estilos.svgIcone} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 16v3a2 2 0 01-2 2H7a2 2 0 01-2-2v-3m14 0V9a2 2 0 00-2-2H7a2 2 0 00-2 2v7m14 0a3 3 0 01-3 3H8a3 3 0 01-3-3M6 10h.01M18 10h.01" />
-              </svg>
-            </div>
+          <div style={estilos.iconesSpecs}>
+            <span>{imovel.quartos} Q</span>
+            <span>{imovel.banheiros} B</span>
+            <span>{imovel.garagens || 0} V</span>
           </div>
         </div>
 
-        {/* Seta para ver detalhes com o Gradiente correto */}
-        <a 
-          href={`/imovel/${imovel.id}`}
-          style={estilos.btnDetalhes}
-          onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
-          onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+        {/* Lado Direito: Botão com a setinha que tinha sumido */}
+        <button 
+          type="button" 
+          style={estilos.btnAcao}
+          onClick={(e) => {
+            // Aqui depois você joga a navegação para a página de detalhes:
+            // window.location.href = `/imovel/${imovel.id}`;
+            console.log('Navegar para o imóvel:', imovel.id);
+          }}
+          title="Ver detalhes do imóvel"
         >
-          <svg style={{ width: '28px', height: '28px' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </a>
+          →
+        </button>
 
       </div>
+
     </div>
   );
 }
