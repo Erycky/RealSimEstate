@@ -4,8 +4,11 @@ import { supabase } from '../../lib/supabase';
 import CardImovel from './CardImovel'; 
 
 export default function FiltrosBusca() {
+  // 1. Mudamos aqui: o painel agora começa FECHADO (false) por padrão 🚀
+  const [isOpen, setIsOpen] = useState(false); 
+  
   const [buscaTexto, setBuscaTexto] = useState('');
-  const [tipo, setTipo] = useState('null'); 
+  const [tipo, setTipo] = useState(null); // Corrigido de 'null' string para null nativo
   const [quartos, setQuartos] = useState(null);
   const [banheiros, setBanheiros] = useState(null);
   const [garagem, setGaragem] = useState(null);
@@ -13,7 +16,6 @@ export default function FiltrosBusca() {
   const [precoMax, setPrecoMax] = useState('');
 
   const [imoveis, setImoveis] = useState([]); 
-  const [isOpen, setIsOpen] = useState(true); 
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [carregando, setCarregando] = useState(false);
@@ -37,8 +39,6 @@ export default function FiltrosBusca() {
     faixaPreco: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', paddingTop: '16px', borderTop: '1px solid #d1d5db' },
     inputsPrecoContainer: { display: 'flex', gap: '16px', maxWidth: '400px', width: '100%' },
     inputPreco: { width: '50%', backgroundColor: '#ffffff', border: 'none', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', color: 'var(--sim-green-start)', outline: 'none', textAlign: 'center', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' },
-    
-    // Alinhado com o grid de 32px do seu CSS original do Astro
     vitrineHeader: { marginTop: '64px', marginBottom: '32px' },
     gridResultados: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '32px' },
     paginacaoContainer: { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '40px', paddingBottom: '40px' },
@@ -50,21 +50,9 @@ export default function FiltrosBusca() {
     const de = (pagina - 1) * ITENS_POR_PAGINA;
     const ate = de + ITENS_POR_PAGINA - 1;
 
-    // Buscando os campos e injetando a relação com imagens_imovel
     let query = supabase.from('imoveis').select(`
-      id,
-      titulo,
-      descricao,
-      tipo,
-      preco,
-      quartos,
-      banheiros,
-      garagens,
-      status,
-      localizacao,
-      imagens_imovel (
-        url_storage
-      )
+      id, titulo, descricao, tipo, preco, quartos, banheiros, garagens, status, localizacao,
+      imagens_imovel ( url_storage )
     `, { count: 'exact' });
 
     if (tipo) {
@@ -75,7 +63,6 @@ export default function FiltrosBusca() {
     if (quartos) query = query.gte('quartos', quartos);
     if (banheiros) query = query.gte('banheiros', banheiros);
     if (garagem) query = query.gte('garagens', garagem);
-
     if (precoMin) query = query.gte('preco', parseFloat(precoMin));
     if (precoMax) query = query.lte('preco', parseFloat(precoMax));
 
@@ -87,15 +74,10 @@ export default function FiltrosBusca() {
     const { data, count, error } = await query;
 
     if (!error && data) {
-      // Exatamente o mesmo tratamento de imagem que você construiu no Astro
-      const imoveisTratados = data.map((imovel) => {
-        const primeiraImagem = imovel.imagens_imovel?.[0]?.url_storage || "/fallback-imovel.jpg";
-        return {
-          ...imovel,
-          imagem_url: primeiraImagem,
-        };
-      });
-
+      const imoveisTratados = data.map((imovel) => ({
+        ...imovel,
+        imagem_url: imovel.imagens_imovel?.[0]?.url_storage || "/fallback-imovel.jpg",
+      }));
       setImoveis(imoveisTratados);
       setTotalPaginas(Math.max(1, Math.ceil(count / ITENS_POR_PAGINA)));
     } else if (error) {
@@ -120,6 +102,8 @@ export default function FiltrosBusca() {
       <div style={estilos.wrapperBarra}>
         {/* BARRA DE BUSCA PRINCIPAL */}
         <form onSubmit={handleBuscar} style={estilos.barraBusca}>
+          
+          {/* Botão da Seta: Abre e fecha manualmente */}
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
@@ -130,10 +114,17 @@ export default function FiltrosBusca() {
             </svg>
           </button>
 
+          {/* Input de Texto com Inteligência de Abertura Automática 🧠 */}
           <input
             type="text"
             value={buscaTexto}
-            onChange={(e) => setBuscaTexto(e.target.value)}
+            onChange={(e) => {
+              setBuscaTexto(e.target.value);
+              // 🚀 Se o usuário começar a digitar e o painel estiver fechado, a gente ABRE!
+              if (!isOpen && e.target.value.length > 0) {
+                setIsOpen(true);
+              }
+            }}
             placeholder="Busque por casas, apartamentos, bairros..."
             style={estilos.inputBusca}
           />
@@ -145,37 +136,33 @@ export default function FiltrosBusca() {
           </button>
         </form>
 
-        {/* PAINEL EXPANSÍVEL */}
+        {/* PAINEL EXPANSÍVEL (SÓ COMPILA SE JÁ ESTIVER ABERTO) */}
         {isOpen && (
           <div style={estilos.painelFiltros}>
             <div style={estilos.linhaGrid}>
               
               {/* Tipo */}
               <div style={estilos.colunaFiltro}>
-  <span style={estilos.label}>Tipo:</span>
-  <div style={estilos.grupoBotoes}>
-    {/* Incluímos o 'Todos' no array para gerar o botão */}
-    {['Todos', 'Comprar', 'Alugar'].map((t) => {
-      // Lógica para definir se o botão está ativo ou não
-      const isAtivo = (t === 'Todos' && tipo === null) || tipo === t;
-
-      return (
-        <button
-          key={t}
-          type="button"
-          onClick={() => { 
-            // Se clicar em 'Todos', reseta o estado para null, senão define o tipo
-            setTipo(t === 'Todos' ? null : t); 
-            setPaginaAtual(1); 
-          }}
-          style={isAtivo ? estilos.btnFiltroAtivo : estilos.btnFiltroInativo}
-        >
-          {t}
-        </button>
-      );
-    })}
-  </div>
-</div>
+                <span style={estilos.label}>Tipo:</span>
+                <div style={estilos.grupoBotoes}>
+                  {['Todos', 'Comprar', 'Alugar'].map((t) => {
+                    const isAtivo = (t === 'Todos' && tipo === null) || tipo === t;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => { 
+                          setTipo(t === 'Todos' ? null : t); 
+                          setPaginaAtual(1); 
+                        }}
+                        style={isAtivo ? estilos.btnFiltroAtivo : estilos.btnFiltroInativo}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
               {/* Quartos */}
               <div style={estilos.colunaFiltro}>
