@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase';
 import CardImovel from './CardImovel'; 
 
 export default function FiltrosBusca() {
-  // 1. Mudamos aqui: o painel agora começa FECHADO (false) por padrão 🚀
   const [isOpen, setIsOpen] = useState(false); 
   
   const [buscaTexto, setBuscaTexto] = useState('');
@@ -22,7 +21,6 @@ export default function FiltrosBusca() {
 
   const ITENS_POR_PAGINA = 8;
 
-  // 📱 ESTADO PARA DETECTAR SE É CELULAR (MOBILE)
   const [isCelular, setIsCelular] = useState(false);
 
   useEffect(() => {
@@ -36,7 +34,6 @@ export default function FiltrosBusca() {
     return () => window.removeEventListener('resize', checarLargura);
   }, []);
 
-  // 🎨 ESTILOS ADAPTATIVOS BASEADOS NO `isCelular`
   const estilos = {
     container: { width: '100%', maxWidth: '1200px', margin: '0 auto', padding: '0 16px', fontFamily: 'sans-serif' },
     wrapperBarra: { maxWidth: '900px', margin: '0 auto', marginTop: isCelular ? '-24px' : '-40px' },
@@ -67,7 +64,7 @@ export default function FiltrosBusca() {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      gap: '8px' // Espaço maroto entre a seta e o texto "Filtros"
+      gap: '8px'
     },
     inputBusca: { 
       width: '100%',
@@ -181,10 +178,7 @@ export default function FiltrosBusca() {
     <div style={estilos.container}>
       
       <div style={estilos.wrapperBarra}>
-        {/* BARRA DE BUSCA PRINCIPAL */}
         <form onSubmit={handleBuscar} style={estilos.barraBusca}>
-          
-          {/* Botão de Filtros: Setinha do Figma + Texto descritivo se for mobile 📱 */}
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
@@ -196,7 +190,6 @@ export default function FiltrosBusca() {
             {isCelular && <span style={{ fontSize: '15px', fontWeight: 'bold', color: 'var(--sim-green-start)' }}>Filtros Avançados</span>}
           </button>
 
-          {/* Input de Texto */}
           <input
             type="text"
             value={buscaTexto}
@@ -210,7 +203,6 @@ export default function FiltrosBusca() {
             style={estilos.inputBusca}
           />
 
-          {/* Botão de Envio adaptativo: Texto "Buscar" no Mobile ou Seta no Desktop 🚀 */}
           <button type="submit" style={estilos.btnEnviar}>
             {isCelular ? (
               <span style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '16px', letterSpacing: '0.5px' }}>Buscar</span>
@@ -222,12 +214,9 @@ export default function FiltrosBusca() {
           </button>
         </form>
 
-        {/* PAINEL EXPANSÍVEL */}
         {isOpen && (
           <div style={estilos.painelFiltros}>
             <div style={estilos.linhaGrid}>
-              
-              {/* Tipo */}
               <div style={estilos.colunaFiltro}>
                 <span style={estilos.label}>Tipo:</span>
                 <div style={estilos.grupoBotoes}>
@@ -249,8 +238,6 @@ export default function FiltrosBusca() {
                   })}
                 </div>
               </div>
-
-              {/* Quartos */}
               <div style={estilos.colunaFiltro}>
                 <span style={estilos.label}>Quartos:</span>
                 <div style={estilos.grupoBotoes}>
@@ -266,8 +253,6 @@ export default function FiltrosBusca() {
                   ))}
                 </div>
               </div>
-
-              {/* Banheiros */}
               <div style={estilos.colunaFiltro}>
                 <span style={estilos.label}>Banheiros:</span>
                 <div style={estilos.grupoBotoes}>
@@ -283,8 +268,6 @@ export default function FiltrosBusca() {
                   ))}
                 </div>
               </div>
-
-              {/* Garagem */}
               <div style={estilos.colunaFiltro}>
                 <span style={estilos.label}>Garagem:</span>
                 <div style={estilos.grupoBotoes}>
@@ -302,8 +285,6 @@ export default function FiltrosBusca() {
               </div>
 
             </div>
-
-            {/* Faixa de Preço */}
             <div style={estilos.faixaPreco}>
               <span style={estilos.label}>Faixa de preço:</span>
               <div style={estilos.inputsPrecoContainer}>
@@ -327,8 +308,6 @@ export default function FiltrosBusca() {
           </div>
         )}
       </div>
-
-      {/* VITRINE DINÂMICA UNIFICADA */}
       <div style={estilos.vitrineHeader}>
         <h2>Imóveis em Destaque</h2>
         <p>Confira as ofertas exclusivas selecionadas para você</p>
@@ -368,7 +347,6 @@ export default function FiltrosBusca() {
           )}
         </>
       )}
-
     </div>
   );
 }

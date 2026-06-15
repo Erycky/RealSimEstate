@@ -4,8 +4,6 @@ import { supabase } from '../../lib/supabase';
 export default function FormularioImovel() {
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState({ tipo: '', texto: '' });
-  
-  // Estados para os campos do imóvel
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [preco, setPreco] = useState('');
@@ -18,11 +16,10 @@ export default function FormularioImovel() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // CORRIGIDO: Agora o estado altera corretamente e não quebra o clique
+    setLoading(true);
     setMensagem({ tipo: '', texto: '' });
 
     try {
-      // 1. Inserir o Imóvel na tabela 'imoveis'
       const { data: imovelInserido, error: erroImovel } = await supabase
         .from('imoveis')
         .insert([
@@ -44,15 +41,12 @@ export default function FormularioImovel() {
       if (erroImovel) throw erroImovel;
 
       const imovelId = imovelInserido.id;
-
-      // 2. Se houver imagens selecionadas, faz o upload e vincula
       if (imagens.length > 0) {
         for (const file of imagens) {
           const fileExt = file.name.split('.').pop();
           const fileName = `${imovelId}/${Math.random()}.${fileExt}`;
           const filePath = `${fileName}`;
 
-          // Bucket corrigido para 'fotos-imoveis'
           const { error: uploadError } = await supabase.storage
             .from('fotos-imoveis')
             .upload(filePath, file);
@@ -63,7 +57,6 @@ export default function FormularioImovel() {
             .from('fotos-imoveis')
             .getPublicUrl(filePath);
 
-          // Tabela de relacionamento 'imagens_imovel'
           const { error: erroLinkImagem } = await supabase
             .from('imagens_imovel')
             .insert([
@@ -79,7 +72,6 @@ export default function FormularioImovel() {
 
       setMensagem({ tipo: 'sucesso', texto: 'Imóvel e imagens cadastrados com sucesso!' });
       
-      // Limpa o formulário
       setTitulo(''); setDescricao(''); setPreco(''); setQuartos(0); setBanheiros(0); setGaragens(0); setLocalizacao(''); setImagens([]);
     } catch (error) {
       console.error(error);

@@ -2,18 +2,15 @@
 import { useState } from 'react';
 
 export default function CardImovel({ imovel }) {
-  // 1. Buscamos todas as URLs das fotos do banco
   const fotos = imovel.imagens_imovel && imovel.imagens_imovel.length > 0
     ? imovel.imagens_imovel.map(img => img.url_storage)
     : ['/fallback-imovel.jpg'];
 
   const [fotoAtivaIndex, setFotoAtivaIndex] = useState(0);
   
-  // Estados para gerenciar o gesto de arrastar (Touch Swipe) 📱
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
-  // Distância mínima em pixels para validar o arrasto
   const MIN_SWIPE_DISTANCE = 50;
 
   const fotoAnterior = (e) => {
@@ -32,9 +29,8 @@ export default function CardImovel({ imovel }) {
     setFotoAtivaIndex((prev) => (prev === fotos.length - 1 ? 0 : prev + 1));
   };
 
-  // Funções para capturar os movimentos do dedo na tela
   const handleTouchStart = (e) => {
-    setTouchEnd(null); // Reseta para evitar herança de arrastos anteriores
+    setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
 
@@ -50,19 +46,17 @@ export default function CardImovel({ imovel }) {
     const isRightSwipe = distance < -MIN_SWIPE_DISTANCE;
 
     if (isLeftSwipe || isRightSwipe) {
-      // Impede comportamentos estranhos na página durante o swipe válido
       e.preventDefault();
       e.stopPropagation();
 
       if (isLeftSwipe) {
-        proximaFoto(); // Arrastou para a esquerda -> Avança foto
+        proximaFoto();
       } else if (isRightSwipe) {
-        fotoAnterior(); // Arrastou para a direita -> Volta foto
+        fotoAnterior();
       }
     }
   };
 
-  // Estilos inline consolidados
   const estilos = {
     card: {
       backgroundColor: '#ffffff',
@@ -78,7 +72,7 @@ export default function CardImovel({ imovel }) {
       height: '320px',
       overflow: 'hidden',
       backgroundColor: '#f3f4f6',
-      touchAction: 'pan-y' // Permite o scroll vertical da página mas trava o horizontal no carrossel
+      touchAction: 'pan-y'
     },
     trilhoImagens: {
       display: 'flex',
@@ -201,8 +195,6 @@ export default function CardImovel({ imovel }) {
 
   return (
     <div className="card-imovel" style={estilos.card}>
-      
-      {/* SEÇÃO SUPERIOR: CARROSSEL COM SUPORTE A SWIPE 📱 */}
       <div 
         style={estilos.containerFoto}
         onTouchStart={handleTouchStart}
@@ -215,14 +207,11 @@ export default function CardImovel({ imovel }) {
 
         {fotos.length > 1 && (
           <>
-            {/* Seta Esquerda */}
             <button type="button" onClick={fotoAnterior} style={{ ...estilos.setaLateral, left: '8px' }} title="Foto anterior">
               <svg style={{ width: '20px', height: '20px', color: '#ffffff', transform: 'rotate(90deg)' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            
-            {/* Seta Direita */}
             <button type="button" onClick={proximaFoto} style={{ ...estilos.setaLateral, right: '8px' }} title="Próxima foto">
               <svg style={{ width: '20px', height: '20px', color: '#ffffff', transform: 'rotate(-90deg)' }} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -239,7 +228,7 @@ export default function CardImovel({ imovel }) {
                 alt={`${imovel.titulo} - Foto ${index + 1}`}
                 style={estilos.imagem}
                 loading={index === 0 ? "eager" : "lazy"} 
-                draggable="false" // Evita bugs de arrastar imagem nativa do navegador
+                draggable="false"
               />
             </div>
           ))}
@@ -261,11 +250,7 @@ export default function CardImovel({ imovel }) {
           </div>
         )}
       </div>
-
-      {/* SEÇÃO INFERIOR: TEXTOS + BOTÃO VERDE */}
       <div style={estilos.conteudoInfo}>
-        
-        {/* Lado Esquerdo: Informações do Imóvel */}
         <div style={estilos.blocoTextos}>
           <h3 style={estilos.titulo}>
             {imovel.titulo}
@@ -279,8 +264,6 @@ export default function CardImovel({ imovel }) {
             <span>{imovel.garagens || 0} V</span>
           </div>
         </div>
-
-        {/* Lado Direito: Botão de Ação */}
         <button 
           type="button" 
           style={estilos.btnAcao}

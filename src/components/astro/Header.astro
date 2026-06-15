@@ -33,8 +33,6 @@
     hamburgerBtn.addEventListener("click", () => {
       const isAberto = navLinks.classList.toggle("active");
       hamburgerBtn.classList.toggle("active");
-
-      // Acessibilidade: atualiza o estado do leitor de tela
       hamburgerBtn.setAttribute("aria-expanded", isAberto ? "true" : "false");
     });
   }
@@ -64,7 +62,7 @@
     font-weight: 700;
     color: var(--sim-text-light);
     text-decoration: none;
-    z-index: 60; /* Fica acima da gaveta mobile */
+    z-index: 60;
   }
 
   .nav-links {
@@ -93,7 +91,6 @@
     font-style: normal;
   }
 
-  /* 📱 ESTILOS DO BOTÃO HAMBÚRGUER (Escondido por padrão no PC) */
   .hamburger-btn {
     display: none;
     flex-direction: column;
@@ -104,7 +101,7 @@
     border: none;
     cursor: pointer;
     padding: 0;
-    z-index: 60; /* Fica acima de tudo */
+    z-index: 60;
   }
 
   .hamburger-btn .bar {
@@ -115,7 +112,6 @@
     transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
-  /* Animação do Hambúrguer virando "X" */
   .hamburger-btn.active .bar:nth-child(1) {
     transform: translateY(9px) rotate(45deg);
   }
@@ -128,19 +124,18 @@
     transform: translateY(-9px) rotate(-45deg);
   }
 
-  /* 🛠️ MEDIA QUERY: CRIA O MENU GAVETA PARA MOBILE */
   @media (max-width: 768px) {
     .hamburger-btn {
-      display: flex; /* Revela o botão no celular */
+      display: flex;
     }
 
     .nav-links {
       position: fixed;
       top: 0;
-      right: -100%; /* Começa totalmente escondido na direita */
-      width: 75%; /* Ocupa 75% da largura da tela */
+      right: -100%;
+      width: 75%;
       height: 100vh;
-      background-color: #0b1410; /* Fundo escuro premium que combina com o tema */
+      background-color: #0b1410;
       box-shadow: -4px 0 15px rgba(0, 0, 0, 0.3);
       flex-direction: column;
       justify-content: center;
@@ -150,13 +145,12 @@
       z-index: 55;
     }
 
-    /* Quando a classe .active for injetada via JS, a gaveta desliza para dentro da tela */
     .nav-links.active {
       right: 0;
     }
 
     .nav-links a {
-      font-size: 20px; /* Links maiores fáceis de tocar no celular */
+      font-size: 20px;
       width: 100%;
       text-align: center;
     }

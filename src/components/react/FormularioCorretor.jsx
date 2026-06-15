@@ -13,7 +13,6 @@ export default function FormularioCorretor() {
     setMensagem({ tipo: '', texto: '' });
 
     try {
-      // Dispara a requisição para o nosso endpoint local do Astro
       const response = await fetch('/api/criar-corretor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -21,7 +21,6 @@ export default function FormularioLogin() {
       setErro(error.message === 'Invalid login credentials' ? 'E-mail ou senha incorretos.' : error.message);
       setLoading(false);
     } else {
-      // Login feito com sucesso! Redireciona direto para a tela de cadastro
       window.location.href = '/admin/novo';
     }
   };
